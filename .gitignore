@@ -1,0 +1,4 @@
+/vendor/
+.env
+/storage/proofs/*
+!/storage/proofs/.gitkeep
