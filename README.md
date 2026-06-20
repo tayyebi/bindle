@@ -43,8 +43,10 @@ cd bindle
 # ساخت و اجرا
 docker compose up -d --build
 
-# اجرای migration
-docker compose exec app php migrations/migrate.php
+# اجرای migrations (new workflow)
+# These will run via dedicated compose services and are idempotent across runs
+docker compose run --rm migrate
+docker compose run --rm seed
 ```
 
 فروشگاه روی `http://localhost:8080` در دسترس خواهد بود.
@@ -61,9 +63,11 @@ docker compose exec app php migrations/migrate.php
 
 ### ادمین سیستم
 
-پیش‌فرض: کاربر ادمین سیستم با دستور زیر ساخته می‌شود:
+پیش‌فرض: کاربر ادمین سیستم با اجرای migrations/seed.php ایجاد می‌شود.
+برای اجرای seed و migrate به صورت جداگانه از سرویس‌های هرکدام استفاده کنید:
 ```bash
-docker compose exec app php migrations/seed.php
+docker compose run --rm migrate
+docker compose run --rm seed
 ```
 
 ## مسیرها

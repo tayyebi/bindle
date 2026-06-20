@@ -1,6 +1,6 @@
 CREATE EXTENSION IF NOT EXISTS pgcrypto;
 
-CREATE TABLE shops (
+CREATE TABLE IF NOT EXISTS shops (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     domain VARCHAR(255) NOT NULL UNIQUE,
     name VARCHAR(255) NOT NULL,
@@ -13,7 +13,7 @@ CREATE TABLE shops (
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     shop_id UUID NOT NULL REFERENCES shops(id) ON DELETE CASCADE,
     url VARCHAR(500) NOT NULL,
@@ -28,14 +28,14 @@ CREATE TABLE products (
     UNIQUE(shop_id, url)
 );
 
-CREATE TABLE carts (
+CREATE TABLE IF NOT EXISTS carts (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     shop_id UUID NOT NULL REFERENCES shops(id) ON DELETE CASCADE,
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE cart_items (
+CREATE TABLE IF NOT EXISTS cart_items (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     cart_id UUID NOT NULL REFERENCES carts(id) ON DELETE CASCADE,
     product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
@@ -44,7 +44,7 @@ CREATE TABLE cart_items (
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE orders (
+CREATE TABLE IF NOT EXISTS orders (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     shop_id UUID NOT NULL REFERENCES shops(id) ON DELETE CASCADE,
     cart_id UUID REFERENCES carts(id) ON DELETE SET NULL,
@@ -61,7 +61,7 @@ CREATE TABLE orders (
     approved_at TIMESTAMP
 );
 
-CREATE TABLE payment_proofs (
+CREATE TABLE IF NOT EXISTS payment_proofs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     type VARCHAR(20) NOT NULL CHECK (type IN ('screenshot', 'text')),
@@ -69,7 +69,7 @@ CREATE TABLE payment_proofs (
     submitted_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE download_tokens (
+CREATE TABLE IF NOT EXISTS download_tokens (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     order_id UUID NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
     product_id UUID NOT NULL REFERENCES products(id) ON DELETE CASCADE,
@@ -79,7 +79,7 @@ CREATE TABLE download_tokens (
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE webhook_logs (
+CREATE TABLE IF NOT EXISTS webhook_logs (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     shop_id UUID NOT NULL REFERENCES shops(id) ON DELETE CASCADE,
     event VARCHAR(50) NOT NULL,
@@ -89,19 +89,19 @@ CREATE TABLE webhook_logs (
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE system_admins (
+CREATE TABLE IF NOT EXISTS system_admins (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     username VARCHAR(100) NOT NULL UNIQUE,
     password_hash VARCHAR(255) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT NOW()
 );
 
-CREATE INDEX idx_products_shop_id ON products(shop_id);
-CREATE INDEX idx_carts_shop_id ON carts(shop_id);
-CREATE INDEX idx_cart_items_cart_id ON cart_items(cart_id);
-CREATE INDEX idx_orders_shop_id ON orders(shop_id);
-CREATE INDEX idx_orders_token ON orders(token);
-CREATE INDEX idx_orders_status ON orders(status);
-CREATE INDEX idx_payment_proofs_order_id ON payment_proofs(order_id);
-CREATE INDEX idx_download_tokens_token ON download_tokens(token);
-CREATE INDEX idx_shops_domain ON shops(domain);
+CREATE INDEX IF NOT EXISTS idx_products_shop_id ON products(shop_id);
+CREATE INDEX IF NOT EXISTS idx_carts_shop_id ON carts(shop_id);
+CREATE INDEX IF NOT EXISTS idx_cart_items_cart_id ON cart_items(cart_id);
+CREATE INDEX IF NOT EXISTS idx_orders_shop_id ON orders(shop_id);
+CREATE INDEX IF NOT EXISTS idx_orders_token ON orders(token);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+CREATE INDEX IF NOT EXISTS idx_payment_proofs_order_id ON payment_proofs(order_id);
+CREATE INDEX IF NOT EXISTS idx_download_tokens_token ON download_tokens(token);
+CREATE INDEX IF NOT EXISTS idx_shops_domain ON shops(domain);
