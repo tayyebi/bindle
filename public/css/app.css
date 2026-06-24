@@ -16,8 +16,11 @@ html {
     -webkit-text-size-adjust: 100%;
 }
 
-body {
+* {
     font-family: 'Vazirmatn', 'Tahoma', sans-serif;
+}
+
+body {
     line-height: 1.8;
     color: #111;
     background: #fff;
@@ -116,7 +119,6 @@ small {
 .btn {
     display: inline-block;
     padding: 0.5rem 1rem;
-    font-family: inherit;
     font-size: 0.9rem;
     font-weight: 600;
     border: 2px solid #111;
@@ -225,7 +227,6 @@ small {
 .form-control {
     width: 100%;
     padding: 0.6rem 0.75rem;
-    font-family: inherit;
     font-size: 0.95rem;
     border: 2px solid #ccc;
     border-radius: 4px;
