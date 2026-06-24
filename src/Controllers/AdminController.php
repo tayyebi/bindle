@@ -26,7 +26,7 @@ class AdminController
             }
             return '';
         }
-        return View::render('shop/login', [], false);
+        return View::render('shop/login', [], true, 'admin');
     }
 
     public function login(): string
@@ -48,7 +48,7 @@ class AdminController
                 if (!$shop['is_active']) {
                     return View::render('shop/login', [
                         'error' => 'فروشگاه غیرفعال است',
-                    ], false);
+                    ], true, 'admin');
                 }
                 $this->request->setSession('shop_id', $shop['id']);
                 View::redirect('/dashboard');
@@ -58,7 +58,7 @@ class AdminController
 
         return View::render('shop/login', [
             'error' => 'اطلاعات وارد شده صحیح نیست',
-        ], false);
+        ], true, 'admin');
     }
 
     public function logout(): string

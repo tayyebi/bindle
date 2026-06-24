@@ -24,6 +24,6 @@ class HomeController
 
     public function landing(): string
     {
-        return View::render('home/landing', [], false);
+        return View::render('home/landing', [], true, 'admin');
     }
 }

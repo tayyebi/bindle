@@ -185,6 +185,6 @@ class Router
     private function notFound(): void
     {
         http_response_code(404);
-        echo View::render('errors/404', [], false);
+        echo View::render('errors/404', [], true, 'admin');
     }
 }

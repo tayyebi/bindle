@@ -27,7 +27,7 @@ class App
             echo View::render('errors/500', [
                 'message' => $this->config['app']['env'] === 'development'
                     ? $e->getMessage() : 'خطای داخلی سرور'
-            ], false);
+            ], true, 'admin');
         }
     }
 

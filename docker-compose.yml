@@ -15,7 +15,7 @@ services:
       DB_USER: bindle
       DB_PASSWORD: bindle
       APP_ENV: development
-      APP_DOMAIN: bindle.ir
+      APP_DOMAIN: ${APP_DOMAIN:-bindle.ir}
       APP_KEY: base64:W6hY5q3vq6pL9xR8sT7uV4wZ2yB0nMmKjHfDcXgNaPb=
     depends_on:
       db:
@@ -67,7 +67,7 @@ services:
     volumes:
       - .:/var/www
     environment:
-      APP_DOMAIN: bindle.ir
+      APP_DOMAIN: ${APP_DOMAIN:-bindle.ir}
     networks:
       - bindle
 
