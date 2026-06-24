@@ -28,4 +28,7 @@ require_once __DIR__ . '/src/helpers.php';
 $config = require __DIR__ . '/config/app.php';
 $app = new App\Core\App($config);
 $GLOBALS['app'] = $app;
+
+App\Services\Logger::register();
+
 $app->run();

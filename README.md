@@ -25,7 +25,7 @@
 | Database   | PostgreSQL 16             |
 | Frontend   | رندر سمت سرور + CSS خالص  |
 | Container  | Docker Compose            |
-| Font       | Sahel (rastikerdar)       |
+| Font       | Vazirmatn (rastikerdar)   |
 
 ## شروع کار
 

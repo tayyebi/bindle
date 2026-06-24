@@ -4,8 +4,20 @@ require_once __DIR__ . '/../bootstrap.php';
 
 $db = App\Core\App::db();
 
-$migration = file_get_contents(__DIR__ . '/001_initial.sql');
-$statements = explode(';', $migration);
+$files = glob(__DIR__ . '/*.sql');
+sort($files);
+
+$statements = [];
+foreach ($files as $file) {
+    $sql = file_get_contents($file);
+    $parts = explode(';', $sql);
+    foreach ($parts as $part) {
+        $part = trim($part);
+        if (!empty($part)) {
+            $statements[] = $part;
+        }
+    }
+}
 
 $db->pdo()->exec('BEGIN');
 try {

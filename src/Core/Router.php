@@ -5,9 +5,13 @@ namespace App\Core;
 use App\Controllers\AdminController;
 use App\Controllers\CartController;
 use App\Controllers\CheckoutController;
+use App\Controllers\DatabaseManagerController;
 use App\Controllers\HomeController;
 use App\Controllers\OrderController;
+use App\Controllers\ProfileController;
 use App\Controllers\ShopDashboardController;
+use App\Controllers\SystemLogController;
+use App\Controllers\SystemWebhookController;
 use App\Models\Shop;
 
 class Router
@@ -62,6 +66,20 @@ class Router
                 '/admin/login' => [AdminController::class, 'loginForm'],
                 '/admin/shops' => [AdminController::class, 'shops'],
                 '/admin/shops/create' => [AdminController::class, 'createShopForm'],
+                '/profile' => [ProfileController::class, 'index'],
+                '/profile/totp' => [ProfileController::class, 'totpSetup'],
+                '/totp/verify' => [ProfileController::class, 'totpVerifyForm'],
+                '/system/logs' => [SystemLogController::class, 'index'],
+                '/system/logs/{id}' => [SystemLogController::class, 'detail'],
+                '/system/logs/clear' => [SystemLogController::class, 'clear'],
+                '/system/webhooks' => [SystemWebhookController::class, 'index'],
+                '/system/webhooks/create' => [SystemWebhookController::class, 'createForm'],
+                '/system/webhooks/edit/{id}' => [SystemWebhookController::class, 'editForm'],
+                '/system/webhooks/toggle/{id}' => [SystemWebhookController::class, 'toggle'],
+                '/system/webhooks/delete/{id}' => [SystemWebhookController::class, 'delete'],
+                '/system/webhooks/test/{id}' => [SystemWebhookController::class, 'test'],
+                '/system/database' => [DatabaseManagerController::class, 'index'],
+                '/system/database/query' => [DatabaseManagerController::class, 'query'],
             ],
             'POST' => [
                 '/login' => [AdminController::class, 'login'],
@@ -71,6 +89,13 @@ class Router
                 '/dashboard/orders/{id}/approve' => [ShopDashboardController::class, 'approveOrder'],
                 '/dashboard/orders/{id}/reject' => [ShopDashboardController::class, 'rejectOrder'],
                 '/dashboard/settings' => [ShopDashboardController::class, 'updateSettings'],
+                '/profile/password' => [ProfileController::class, 'updatePassword'],
+                '/profile/totp/enable' => [ProfileController::class, 'totpEnable'],
+                '/profile/totp/disable' => [ProfileController::class, 'totpDisable'],
+                '/totp/verify' => [ProfileController::class, 'totpVerify'],
+                '/system/webhooks/create' => [SystemWebhookController::class, 'create'],
+                '/system/webhooks/edit/{id}' => [SystemWebhookController::class, 'edit'],
+                '/system/database/query' => [DatabaseManagerController::class, 'query'],
             ],
         ];
     }
@@ -78,6 +103,9 @@ class Router
     public function dispatch(): void
     {
         $method = $this->request->method();
+        if ($method === 'HEAD') {
+            $method = 'GET';
+        }
         $uri = $this->request->uri();
         $host = $this->request->host();
 

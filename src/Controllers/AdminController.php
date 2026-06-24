@@ -38,6 +38,12 @@ class AdminController
         if ($isAdmin) {
             $admin = SystemAdmin::verifyPassword($email, $password);
             if ($admin) {
+                if (!empty($admin['totp_enabled'])) {
+                    $_SESSION['pending_2fa_type'] = 'admin';
+                    $_SESSION['pending_2fa_id'] = $admin['id'];
+                    View::redirect('/totp/verify');
+                    return '';
+                }
                 $this->request->setSession('admin_id', $admin['id']);
                 View::redirect('/admin');
                 return '';
@@ -49,6 +55,12 @@ class AdminController
                     return View::render('shop/login', [
                         'error' => 'فروشگاه غیرفعال است',
                     ], true, 'admin');
+                }
+                if (!empty($shop['totp_enabled'])) {
+                    $_SESSION['pending_2fa_type'] = 'shop';
+                    $_SESSION['pending_2fa_id'] = $shop['id'];
+                    View::redirect('/totp/verify');
+                    return '';
                 }
                 $this->request->setSession('shop_id', $shop['id']);
                 View::redirect('/dashboard');

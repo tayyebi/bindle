@@ -22,7 +22,8 @@ class App
         try {
             $this->registerRoutes();
             $this->router->dispatch();
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
+            \App\Services\Logger::log('critical', $e->getMessage(), $e->getFile(), $e->getLine(), $e->getTraceAsString());
             http_response_code(500);
             echo View::render('errors/500', [
                 'message' => $this->config['app']['env'] === 'development'

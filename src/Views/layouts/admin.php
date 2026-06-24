@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?= trans('app.name') ?> | <?= $title ?? trans('dashboard') ?></title>
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/sahel-font@v1.0.0/dist/Sahel.css">
+    <link rel="preload" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css"></noscript>
     <link rel="stylesheet" href="/css/app.css">
 </head>
 <body>
@@ -20,10 +21,15 @@
                     <a href="/dashboard" class="btn btn-sm btn-outline"><?= trans('dashboard') ?></a>
                     <a href="/dashboard/orders" class="btn btn-sm btn-outline"><?= trans('orders') ?></a>
                     <a href="/dashboard/settings" class="btn btn-sm btn-outline"><?= trans('settings') ?></a>
+                    <a href="/profile" class="btn btn-sm btn-outline">پروفایل</a>
                     <a href="/logout" class="btn btn-sm btn-outline"><?= trans('logout') ?></a>
                 <?php elseif (isset($_SESSION['admin_id'])): ?>
                     <a href="/admin" class="btn btn-sm btn-outline"><?= trans('dashboard') ?></a>
                     <a href="/admin/shops" class="btn btn-sm btn-outline"><?= trans('shops') ?></a>
+                    <a href="/system/logs" class="btn btn-sm btn-outline">لاگ‌ها</a>
+                    <a href="/system/webhooks" class="btn btn-sm btn-outline">وب‌هوک</a>
+                    <a href="/system/database" class="btn btn-sm btn-outline">دیتابیس</a>
+                    <a href="/profile" class="btn btn-sm btn-outline">پروفایل</a>
                     <a href="/logout" class="btn btn-sm btn-outline"><?= trans('logout') ?></a>
                 <?php else: ?>
                     <a href="/login" class="btn btn-sm btn-outline"><?= trans('login') ?></a>

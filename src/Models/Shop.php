@@ -78,4 +78,28 @@ class Shop
         }
         return null;
     }
+
+    public static function updatePassword(string $id, string $hash): void
+    {
+        App::db()->query(
+            'UPDATE shops SET password_hash = ?, updated_at = NOW() WHERE id = ?',
+            [$hash, $id]
+        );
+    }
+
+    public static function enableTotp(string $id, string $secret): void
+    {
+        App::db()->query(
+            'UPDATE shops SET totp_secret = ?, totp_enabled = true, updated_at = NOW() WHERE id = ?',
+            [$secret, $id]
+        );
+    }
+
+    public static function disableTotp(string $id): void
+    {
+        App::db()->query(
+            'UPDATE shops SET totp_secret = \'\', totp_enabled = false, updated_at = NOW() WHERE id = ?',
+            [$id]
+        );
+    }
 }
