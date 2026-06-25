@@ -27,7 +27,7 @@ class SchemaParser
             CURLOPT_FOLLOWLOCATION => true,
             CURLOPT_TIMEOUT => 15,
             CURLOPT_SSL_VERIFYPEER => true,
-            CURLOPT_USERAGENT => 'Bindle/1.0 (Cart Service)',
+            CURLOPT_USERAGENT => 'BindleBot/1.0',
             CURLOPT_MAXREDIRS => 5,
         ]);
 

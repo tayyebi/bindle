@@ -55,6 +55,11 @@
                 <p class="text-gray">بقچه به صورت خودکار اطلاعات محصول را از schema.org استخراج می‌کند</p>
             </div>
         </div>
+        <p class="text-gray" style="margin-top:1.5rem;font-size:0.9rem;">
+            <strong>توجه:</strong> crawler بقچه با User-Agent <code>BindleBot/1.0</code> صفحه محصول شما را برای استخراج اطلاعات بررسی می‌کند.
+            در صورت استفاده از CDN یا فایروال، این crawler را مجاز کنید.
+        </p>
+        </div>
     </div>
 
     <div class="landing-section">
@@ -85,6 +90,7 @@ Steps:
 1. Find the product page template
 2. Add the link with the correct SUBDOMAIN
 3. Make sure the page has schema.org/Product markup
-4. Style the link as a button matching the site design</pre>
+4. Style the link as a button matching the site design
+5. Whitelist BindleBot/1.0 in CDN/firewall so Bindle can fetch product data</pre>
     </div>
 </div>
