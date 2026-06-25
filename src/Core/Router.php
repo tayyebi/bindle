@@ -35,6 +35,7 @@ class Router
         $this->shopRoutes = [
             'GET' => [
                 '/' => [HomeController::class, 'index'],
+                '/add' => [CartController::class, 'add'],
                 '/cart' => [CartController::class, 'index'],
                 '/checkout' => [CheckoutController::class, 'index'],
                 '/order/{token}' => [OrderController::class, 'show'],

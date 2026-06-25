@@ -2,215 +2,83 @@
 
 مدیریت سبد خرید و پرداخت دستی برای فروشگاه‌های آنلاین.
 
-## نمای کلی
+```mermaid
+sequenceDiagram
+    box rgb(200, 220, 240) Customer
+        actor Customer
+    end
+    box rgb(220, 240, 200) Merchant
+        actor MerchantSite as فروشگاه
+        actor Merchant as فروشنده
+    end
+    box rgb(255, 235, 200) Bindle
+        participant Bindle as بقچه
+        participant Crawler as BindleBot
+        participant DB as دیتابیس
+    end
+    box rgb(240, 210, 240) Admin
+        actor Admin as ادمین سیستم
+    end
+    participant Webhook as وب‌هوک
 
-یک SaaS چندمستاجره که فروشندگان با اشاره CNAME یک زیردامنه به بقچه، سبد خرید و پرداخت را به فروشگاه خود اضافه می‌کنند.
+    rect rgb(245, 235, 255)
+        Note over Admin,DB: مرحله ۱: ایجاد فروشگاه
+        Admin->>Bindle: /admin/shops/create
+        Bindle->>DB: INSERT shops
+        DB-->>Bindle: shop created
+        Bindle-->>Admin: فروشگاه فعال شد
+    end
 
-## ویژگی‌ها
+    rect rgb(230, 245, 230)
+        Note over Merchant,Bindle: مرحله ۲: تنظیم DNS
+        Merchant->>MerchantSite: CNAME cart.example.com → Bindle server
+        Merchant->>MerchantSite: افزودن لینک /add به صفحه محصول
+    end
 
-- **تشخیص خودکار محصول**: با parsing schema.org/Product از صفحه محصول
-- **سبد خرید مبتنی بر کوکی + دیتابیس**: ماندگار و قابل ارجاع
-- **تسویه حساب میزبانی شده**: فرم تسویه روی دامنه فروشگاه
-- **پرداخت دستی**: تأیید با اسکرین‌شات یا شماره تراکنش
-- **داشبورد فروشنده**: مدیریت سفارش‌ها، تأیید/رد پرداخت‌ها
-- **وب‌هوک**: ارسال رویدادهای سفارش به آدرس دلخواه
-- **تحویل محصولات دیجیتال**: لینک دانلود پس از تأیید پرداخت
-- **مدیریت سیستم**: پنل ادمین برای مدیریت فروشگاه‌ها
+    rect rgb(250, 240, 230)
+        Note over Customer,Webhook: مرحله ۳: خرید مشتری
+        Customer->>MerchantSite: بازدید از صفحه محصول
+        Customer->>Bindle: کلیک روی /add?url=PRODUCT_URL
+        Bindle->>Crawler: BindleBot/1.0 crawl product page
+        Crawler->>MerchantSite: GET product page
+        MerchantSite-->>Crawler: HTML with schema.org/Product
+        Crawler-->>Bindle: نام، قیمت، توضیحات
+        Bindle->>DB: INSERT/UPDATE products
+        Bindle->>DB: INSERT cart_items
+        Bindle-->>Customer: redirect /cart
+        Customer->>Bindle: /cart
+        Bindle-->>Customer: مشاهده سبد خرید
+        Customer->>Bindle: /checkout → POST (name, email, address)
+        Bindle->>DB: INSERT orders (status: pending)
+        Bindle-->>Customer: نمایش دستورالعمل پرداخت
+        Customer->>Bindle: POST /order/{id}/proof (screenshot or txID)
+        Bindle->>DB: INSERT payment_proofs
+        Bindle-->>Customer: رسید ثبت شد
+    end
 
-## تکنولوژی
+    rect rgb(230, 240, 250)
+        Note over Merchant,Webhook: مرحله ۴: تأیید فروشنده
+        Merchant->>Bindle: /login → /dashboard/orders
+        Bindle->>DB: SELECT orders WHERE shop_id
+        DB-->>Bindle: لیست سفارش‌ها
+        Bindle-->>Merchant: مشاهده سفارش + رسید
+        Merchant->>Bindle: POST /dashboard/orders/{id}/approve
+        Bindle->>DB: UPDATE orders SET status=approved
+        alt محصول دیجیتال
+            Bindle->>DB: INSERT download_tokens
+        end
+        Bindle->>Webhook: POST order.approved (JSON)
+        Bindle-->>Merchant: تأیید شد
+        Bindle-->>Customer: لینک دانلود (در صورت دیجیتال)
+    end
 
-| بخش        | فناوری                    |
-|------------|---------------------------|
-| Backend    | PHP 8.2 (MVC خالص)        |
-| Database   | PostgreSQL 16             |
-| Frontend   | رندر سمت سرور + CSS خالص  |
-| Container  | Docker Compose            |
-| Font       | Vazirmatn (rastikerdar)   |
-
-## شروع کار
-
-### پیش‌نیازها
-
-- Docker & Docker Compose
-
-### نصب
-
-```bash
-# کلون کردن پروژه
-git clone https://github.com/tayyebi/bindle.git
-cd bindle
-
-# ساخت و اجرا
-docker compose up -d --build
-
-# اجرای migrations (new workflow)
-# These will run via dedicated compose services and are idempotent across runs
-docker compose run --rm migrate
-docker compose run --rm seed
+    rect rgb(255, 240, 230)
+        Note over Admin,DB: مرحله ۵: مدیریت سیستم
+        Admin->>Bindle: /admin/shops
+        Bindle->>DB: SELECT shops
+        DB-->>Bindle: all shops
+        Bindle-->>Admin: لیست فروشگاه‌ها
+        Admin->>Bindle: POST /admin/shops/{id}/toggle
+        Bindle->>DB: UPDATE shops SET is_active
+    end
 ```
-
-فروشگاه روی `http://localhost:8880` در دسترس خواهد بود.
-
-### ادمین سیستم
-
-پیش‌فرض: کاربر ادمین سیستم با اجرای migrations/seed.php ایجاد می‌شود.
-برای اجرای seed و migrate به صورت جداگانه از سرویس‌های هرکدام استفاده کنید:
-```bash
-docker compose run --rm migrate
-docker compose run --rm seed
-```
-
-## مسیرها
-
-### دامنه فروشگاه (از طریق CNAME)
-| روش | مسیر            | توضیح                     |
-|-----|-----------------|---------------------------|
-| GET | `/`             | صفحه اصلی فروشگاه         |
-| GET | `/add`          | افزودن محصول به سبد خرید  |
-| GET | `/cart`         | مشاهده سبد خرید           |
-| POST| `/cart/update`  | بروزرسانی تعداد           |
-| POST| `/cart/remove`  | حذف از سبد خرید           |
-| GET | `/checkout`     | فرم تسویه حساب            |
-| POST| `/checkout`     | ثبت سفارش                 |
-| GET | `/order/{token}`| وضعیت سفارش               |
-| POST| `/order/{id}/proof`| ارسال رسید پرداخت       |
-| GET | `/download/{token}`| دانلود محصول دیجیتال    |
-
-### دامنه اصلی (پنل مدیریت)
-| روش | مسیر                              | توضیح              |
-|-----|-----------------------------------|--------------------|
-| GET | `/login`                          | فرم ورود           |
-| POST| `/login`                          | ورود               |
-| GET | `/logout`                         | خروج               |
-| GET | `/dashboard`                      | داشبورد فروشنده    |
-| GET | `/dashboard/orders`               | لیست سفارش‌ها      |
-| GET | `/dashboard/orders/{id}`          | جزئیات سفارش       |
-| POST| `/dashboard/orders/{id}/approve`  | تأیید پرداخت       |
-| POST| `/dashboard/orders/{id}/reject`   | رد پرداخت          |
-| GET | `/dashboard/settings`             | تنظیمات فروشگاه    |
-| POST| `/dashboard/settings`             | بروزرسانی تنظیمات  |
-| GET | `/admin`                          | پنل ادمین سیستم    |
-| GET | `/admin/shops`                    | لیست فروشگاه‌ها    |
-| GET | `/admin/shops/create`             | فرم ایجاد فروشگاه  |
-| POST| `/admin/shops/create`             | ایجاد فروشگاه      |
-| POST| `/admin/shops/{id}/toggle`        | فعال/غیرفعال کردن  |
-
----
-
-## راهنمای کاربری (User Manual)
-
-### سطح ۱: مشتری (خریدار)
-
-مشتریان از طریق لینک «افزودن به سبد خرید» که فروشنده در صفحه محصول قرار داده، وارد فرایند خرید می‌شوند.
-
-#### افزودن به سبد خرید
-- با کلیک روی لینک `افزودن به سبد خرید`، محصول به سبد خرید اضافه می‌شود.
-- لینک نمونه:
-  ```html
-  <a href="https://cart.example.com/add?url=https://example.com/product/my-product">افزودن به سبد خرید</a>
-  ```
-- پس از افزودن، به صفحه سبد خرید هدایت می‌شوید.
-
-#### مدیریت سبد خرید
-- **مشاهده سبد خرید**: به آدرس `/cart` مراجعه کنید.
-- **تغییر تعداد**: تعداد هر محصول را تغییر داده و روی بروزرسانی کلیک کنید.
-- **حذف کالا**: با کلیک روی دکمه حذف، محصول از سبد خرید خارج می‌شود.
-- سبد خرید به صورت خودکار با کوکی مرورگر ذخیره می‌شود.
-
-#### ثبت سفارش
-1. به صفحه `/checkout` بروید.
-2. اطلاعات زیر را وارد کنید:
-   - نام و نام خانوادگی
-   - ایمیل
-   - آدرس تحویل (فیزیکی یا مجازی)
-3. روی دکمه ثبت سفارش کلیک کنید.
-4. پس از ثبت، صفحه سفارش با **دستورالعمل پرداخت** فروشنده نمایش داده می‌شود.
-
-#### ارسال رسید پرداخت
-1. پس از ثبت سفارش، در صفحه سفارش گزینه آپلود رسید را مشاهده می‌کنید.
-2. می‌توانید یکی از دو روش را انتخاب کنید:
-   - **آپلود تصویر رسید**: اسکرین‌شات یا عکس از رسید پرداخت
-   - **شماره تراکنش**: شماره پیگیری تراکنش بانکی
-3. پس از تأیید فروشنده، وضعیت سفارش به «تأیید شده» تغییر می‌کند.
-
-#### دانلود محصولات دیجیتال
-- پس از تأیید پرداخت، اگر محصول دیجیتال باشد، لینک دانلود در صفحه سفارش نمایش داده می‌شود.
-- لینک دانلود دارای زمان محدود است و تنها یکبار قابل استفاده می‌باشد.
-
-#### پیگیری سفارش
-- لینک صفحه سفارش (`/order/{token}`) همیشه در دسترس است.
-- می‌توانید وضعیت سفارش (در انتظار، تأیید شده، رد شده) را مشاهده کنید.
-
----
-
-### سطح ۲: فروشنده (صاحب فروشگاه)
-
-#### ورود به داشبورد
-1. به آدرس `/login` در دامنه اصلی بقچه بروید.
-2. با ایمیل و رمز عبوری که ادمین سیستم تعیین کرده وارد شوید.
-3. به داشبورد فروشگاه در `/dashboard` منتقل می‌شوید.
-
-#### تنظیمات فروشگاه
-1. از داشبورد به `/dashboard/settings` بروید.
-2. می‌توانید موارد زیر را تنظیم کنید:
-   - **نام فروشگاه**: نام نمایشی فروشگاه
-   - **دستورالعمل پرداخت**: متن راهنمای پرداخت که پس از ثبت سفارش به مشتری نشان داده می‌شود (مثال: شماره کارت، شماره شبا)
-   - **آدرس وب‌هوک**: آدرسی که رویدادهای سفارش به آن ارسال می‌شود
-
-#### مدیریت سفارش‌ها
-1. از داشبورد به `/dashboard/orders` بروید.
-2. می‌توانید سفارش‌ها را بر اساس وضعیت فیلتر کنید.
-3. با کلیک روی هر سفارش، جزئیات و رسید پرداخت ارسالی مشتری را مشاهده می‌کنید.
-4. اقدامات:
-   - **تأیید**: پس از بررسی و تأیید رسید پرداخت، سفارش را تأیید کنید. برای محصولات دیجیتال، لینک دانلود برای مشتری صادر می‌شود.
-   - **رد**: در صورت مشکل در پرداخت، سفارش را رد کنید.
-
-#### وب‌هوک (Webhook)
-- پس از تأیید یا رد سفارش، یک درخواست POST به آدرس وب‌هوک تنظیم شده ارسال می‌شود.
-- بدنه درخواست شامل اطلاعات کامل سفارش به صورت JSON است.
-- رویدادها: `order.approved` و `order.rejected`
-
----
-
-### سطح ۳: ادمین سیستم
-
-#### ورود به پنل ادمین
-1. به آدرس `/admin/login` یا `/login` بروید.
-2. گزینه «ورود به عنوان مدیر سیستم» را فعال کنید.
-3. با نام کاربری و رمز عبور مدیر سیستم وارد شوید.
-4. پیش‌فرض: `admin` / `admin123` (تغییر دهید!)
-
-#### مدیریت فروشگاه‌ها
-- **مشاهده فروشگاه‌ها**: `/admin/shops` - لیست تمام فروشگاه‌ها با وضعیت فعال/غیرفعال
-- **ایجاد فروشگاه**: `/admin/shops/create` - فرم ایجاد فروشگاه جدید با مشخصات:
-  - دامنه (الزامی)
-  - نام فروشگاه (الزامی)
-  - ایمیل (الزامی)
-  - رمز عبور (حداقل ۶ کاراکتر)
-- **فعال/غیرفعال کردن**: با کلیک روی دکمه تغییر وضعیت، فروشگاه فعال یا غیرفعال می‌شود. فروشگاه غیرفعال در دامنه خود در دسترس نخواهد بود.
-
-#### تنظیم دامنه اصلی
-- دامنه اصلی بقچه در متغیر محیطی `APP_DOMAIN` تنظیم می‌شود.
-- مقدار پیش‌فرض در `config/app.php`: `bindle.ir`
-- تمام درخواست‌ها به دامنه اصلی و زیردامنه‌های آن (`*.bindle.ir`) به عنوان درخواست پنل مدیریت در نظر گرفته می‌شوند.
-- دامنه‌های دیگر به عنوان فروشگاه مستقل شناخته می‌شوند.
-
-#### استقرار (Deployment)
-```bash
-# ساخت و اجرا
-docker compose up -d --build
-
-# اجرای migrations (فقط بار اول یا پس از تغییرات)
-docker compose run --rm migrate
-docker compose run --rm seed
-
-# مشاهده لاگ‌ها
-docker compose logs -f app web
-```
-
-#### نکات امنیتی
-- همیشه از HTTPS استفاده کنید (در محیط تولید).
-- رمز عبور پیش‌فرض ادمین سیستم را تغییر دهید.
-- فروشگاه‌های غیرفعال را غیرفعال نگه دارید.
-- دستورالعمل‌های پرداخت را به‌روز نگه دارید.
-- برای آپلود رسید، حجم فایل حداکثر ۱۰ مگابایت است.
