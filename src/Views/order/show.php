@@ -59,7 +59,7 @@
                             <input type="radio" name="proof_type" value="text">
                             <?= trans('proof_transaction_id') ?>
                         </label>
-                        <input type="text" name="proof_text" class="form-control" placeholder="شماره تراکنش">
+                        <textarea name="proof_text" class="form-control" placeholder="متن رسید" rows="3"></textarea>
                     </div>
                     <button type="submit" class="btn btn-primary"><?= trans('submit') ?></button>
                 </form>

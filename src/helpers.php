@@ -48,7 +48,7 @@ function trans(string $key): string
         'payment_instructions' => 'دستورالعمل پرداخت',
         'upload_proof' => 'آپلود رسید پرداخت',
         'proof_screenshot' => 'تصویر رسید',
-        'proof_transaction_id' => 'شماره تراکنش',
+        'proof_transaction_id' => 'متن رسید',
         'order_status' => 'وضعیت سفارش',
         'download' => 'دانلود',
         'my_orders' => 'سفارش‌های من',

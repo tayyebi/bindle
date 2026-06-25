@@ -11,7 +11,7 @@
     <div class="landing-features">
         <div class="feature-card">
             <h3>اتصال ساده</h3>
-            <p class="text-gray">فقط کافیست یک CNAME به بقچه指向 دهید</p>
+            <p class="text-gray">فقط کافیست یک CNAME به بقچه اشاره کنید</p>
         </div>
         <div class="feature-card">
             <h3>تشخیص خودکار محصول</h3>
@@ -35,7 +35,7 @@
             <div class="step-card">
                 <div class="step-number">۲</div>
                 <h3>تنظیم DNS</h3>
-                <p class="text-gray">یک زیردامنه مانند <code>cart.example.com</code> با رکورد CNAME به سرور بقچه指向 دهید</p>
+                <p class="text-gray">یک زیردامنه مانند <code>cart.example.com</code> با رکورد CNAME به سرور بقچه اشاره کنید</p>
             </div>
             <div class="step-card">
                 <div class="step-number">۳</div>
