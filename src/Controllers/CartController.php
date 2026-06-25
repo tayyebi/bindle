@@ -37,6 +37,16 @@ class CartController
         $url = $this->request->query('url', '');
 
         if (empty($url)) {
+            $b64 = $this->request->query('b64', '');
+            if ($b64 !== '') {
+                $decoded = base64_decode($b64, true);
+                if ($decoded !== false) {
+                    $url = $decoded;
+                }
+            }
+        }
+
+        if (empty($url)) {
             View::redirect('/cart');
             return '';
         }
