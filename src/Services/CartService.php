@@ -36,10 +36,15 @@ class CartService
     public function addItem(string $shopId, string $productUrl): array
     {
         $schemaParser = new SchemaParser();
-        $productData = $schemaParser->parse($productUrl);
+        $productData = $schemaParser->parse($productUrl, $shopId);
 
         if (!$productData) {
-            return ['error' => 'امکان تشخیص محصول وجود ندارد'];
+            $reason = $schemaParser->getLastError();
+            $msg = 'امکان تشخیص محصول وجود ندارد';
+            if ($reason) {
+                $msg .= ' (' . $reason . ')';
+            }
+            return ['error' => $msg];
         }
 
         $productData['url'] = $productUrl;

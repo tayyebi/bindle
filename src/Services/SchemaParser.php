@@ -4,21 +4,74 @@ namespace App\Services;
 
 class SchemaParser
 {
-    public function parse(string $url): ?array
+    private ?string $lastError = null;
+
+    public function getLastError(): ?string
     {
-        $html = $this->fetchUrl($url);
-        if (!$html) return null;
-
-        $product = $this->parseJsonLd($html);
-        if ($product) return $product;
-
-        $product = $this->parseMicrodata($html);
-        if ($product) return $product;
-
-        return null;
+        return $this->lastError;
     }
 
-    private function fetchUrl(string $url): ?string
+    public function parse(string $url, ?string $shopId = null): ?array
+    {
+        $this->lastError = null;
+        $startTime = microtime(true);
+        $httpCode = 0;
+        $success = false;
+        $parserUsed = '';
+        $errorMessage = '';
+        $productData = null;
+
+        try {
+            $html = $this->fetchUrl($url, $httpCode);
+            if ($html === null) {
+                $errorMessage = $httpCode === 0 ? 'cURL error: failed to connect' : "HTTP {$httpCode}";
+                $this->lastError = $errorMessage;
+                return null;
+            }
+
+            $productData = $this->parseJsonLd($html);
+            if ($productData) {
+                $parserUsed = 'jsonld';
+                $success = true;
+                return $productData;
+            }
+
+            $productData = $this->parseMicrodata($html);
+            if ($productData) {
+                $parserUsed = 'microdata';
+                $success = true;
+                return $productData;
+            }
+
+            if (preg_match('/<script[^>]*type="application\/ld\+json"[^>]*>/si', $html)) {
+                $errorMessage = 'JSON-LD found but no Product with valid price';
+            } elseif (preg_match('/itemscope[^>]*itemtype="?[^"]*\/Product"?/si', $html)) {
+                $errorMessage = 'Microdata found but no price extracted';
+            } else {
+                $errorMessage = 'No schema.org/Product markup found on page';
+            }
+            $this->lastError = $errorMessage;
+            return null;
+        } catch (\Throwable $e) {
+            $errorMessage = 'Exception: ' . $e->getMessage();
+            $this->lastError = $errorMessage;
+            return null;
+        } finally {
+            $durationMs = (int) ((microtime(true) - $startTime) * 1000);
+            RequestLogger::logCrawl(
+                url: $url,
+                shopId: $shopId,
+                httpCode: $httpCode,
+                durationMs: $durationMs,
+                success: $success,
+                parserUsed: $parserUsed,
+                errorMessage: $errorMessage,
+                productData: $success ? $productData : null
+            );
+        }
+    }
+
+    private function fetchUrl(string $url, ?int &$httpCode = null): ?string
     {
         $ch = curl_init();
         curl_setopt_array($ch, [
@@ -33,9 +86,15 @@ class SchemaParser
 
         $html = curl_exec($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
         curl_close($ch);
 
-        if ($httpCode !== 200 || $html === false) return null;
+        if ($html === false || $httpCode !== 200) {
+            if ($html === false && $curlError) {
+                $httpCode = 0;
+            }
+            return null;
+        }
 
         return $html;
     }

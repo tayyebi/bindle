@@ -13,6 +13,7 @@ use App\Controllers\ShopDashboardController;
 use App\Controllers\SystemLogController;
 use App\Controllers\SystemWebhookController;
 use App\Models\Shop;
+use App\Services\RequestLogger;
 
 class Router
 {
@@ -71,8 +72,9 @@ class Router
                 '/profile/totp' => [ProfileController::class, 'totpSetup'],
                 '/totp/verify' => [ProfileController::class, 'totpVerifyForm'],
                 '/system/logs' => [SystemLogController::class, 'index'],
-                '/system/logs/{id}' => [SystemLogController::class, 'detail'],
                 '/system/logs/clear' => [SystemLogController::class, 'clear'],
+                '/system/logs/export' => [SystemLogController::class, 'export'],
+                '/system/logs/{id}' => [SystemLogController::class, 'detail'],
                 '/system/webhooks' => [SystemWebhookController::class, 'index'],
                 '/system/webhooks/create' => [SystemWebhookController::class, 'createForm'],
                 '/system/webhooks/edit/{id}' => [SystemWebhookController::class, 'editForm'],
@@ -103,41 +105,67 @@ class Router
 
     public function dispatch(): void
     {
+        $startTime = microtime(true);
         $method = $this->request->method();
         if ($method === 'HEAD') {
             $method = 'GET';
         }
-        $uri = $this->request->uri();
+        $uriPath = $this->request->uri();
         $host = $this->request->host();
 
-        $isShopDomain = $this->resolveShopContext($host);
+        try {
+            $isShopDomain = $this->resolveShopContext($host);
 
-        if ($isShopDomain && $this->shopContext) {
-            $this->request->setShopContext($this->shopContext);
-            $handler = $this->matchRoute($method, $uri, $this->shopRoutes);
+            if ($isShopDomain && $this->shopContext) {
+                $this->request->setShopContext($this->shopContext);
+                $handler = $this->matchRoute($method, $uriPath, $this->shopRoutes);
+                if ($handler) {
+                    $this->executeHandler($handler);
+                    return;
+                }
+                $this->notFound();
+                return;
+            }
+
+            $handler = $this->matchRoute($method, $uriPath, $this->adminRoutes);
             if ($handler) {
                 $this->executeHandler($handler);
                 return;
             }
+
+            if (!$isShopDomain) {
+                $handler = $this->matchRoute($method, $uriPath, $this->shopRoutes);
+                if ($handler) {
+                    $this->executeHandler($handler);
+                    return;
+                }
+            }
+
             $this->notFound();
-            return;
-        }
-
-        $handler = $this->matchRoute($method, $uri, $this->adminRoutes);
-        if ($handler) {
-            $this->executeHandler($handler);
-            return;
-        }
-
-        if (!$isShopDomain) {
-            $handler = $this->matchRoute($method, $uri, $this->shopRoutes);
-            if ($handler) {
-                $this->executeHandler($handler);
-                return;
+        } finally {
+            $durationMs = (int) ((microtime(true) - $startTime) * 1000);
+            $fullUrl = $_SERVER['REQUEST_URI'] ?? '/';
+            $statusCode = http_response_code();
+            $userType = '';
+            $userId = '';
+            if (isset($_SESSION['admin_id'])) {
+                $userType = 'admin';
+                $userId = $_SESSION['admin_id'];
+            } elseif (isset($_SESSION['shop_id'])) {
+                $userType = 'shop';
+                $userId = $_SESSION['shop_id'];
             }
+            RequestLogger::logRequest(
+                method: $method,
+                url: $fullUrl,
+                statusCode: $statusCode,
+                durationMs: $durationMs,
+                host: $host,
+                shopContext: $this->shopContext,
+                userType: $userType,
+                userId: $userId
+            );
         }
-
-        $this->notFound();
     }
 
     private function resolveShopContext(string $host): bool
