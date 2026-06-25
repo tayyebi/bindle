@@ -22,10 +22,10 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="customer_email"><?= trans('email') ?></label>
+                    <label for="customer_email"><?= trans('email') ?> <small class="text-gray">(اختیاری)</small></label>
                     <input type="email" id="customer_email" name="customer_email"
                            value="<?= e($old['customer_email'] ?? '') ?>"
-                           required class="form-control">
+                           class="form-control" placeholder="example@email.com">
                 </div>
 
                 <div class="form-group">

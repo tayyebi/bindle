@@ -60,8 +60,8 @@ class CheckoutController
         if (empty($customerName)) {
             $errors[] = 'نام و نام خانوادگی الزامی است';
         }
-        if (empty($customerEmail) || !filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
-            $errors[] = 'ایمیل معتبر الزامی است';
+        if (!empty($customerEmail) && !filter_var($customerEmail, FILTER_VALIDATE_EMAIL)) {
+            $errors[] = 'ایمیل وارد شده معتبر نیست';
         }
 
         $hasPhysical = false;
