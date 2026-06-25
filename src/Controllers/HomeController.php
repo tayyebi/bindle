@@ -16,10 +16,8 @@ class HomeController
 
     public function index(): string
     {
-        $shop = $this->request->getShopContext();
-        return View::render('home/shop', [
-            'shop' => $shop,
-        ]);
+        View::redirect('/cart', 301);
+        return '';
     }
 
     public function landing(): string
