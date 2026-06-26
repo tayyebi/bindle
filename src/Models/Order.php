@@ -51,6 +51,7 @@ class Order
             'currency' => $data['currency'],
             'customer_name' => $data['customer_name'],
             'customer_email' => $data['customer_email'],
+            'customer_phone' => $data['customer_phone'] ?? '',
             'shipping_address' => $data['shipping_address'] ?? '',
             'notes' => $data['notes'] ?? '',
         ]);

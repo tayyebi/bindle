@@ -198,4 +198,40 @@ class AdminController
         View::redirect('/admin/shops');
         return '';
     }
+
+    public function deleteShopForm(string $id): string
+    {
+        if (!$this->request->hasSession('admin_id')) {
+            View::redirect('/admin/login');
+            return '';
+        }
+
+        $shop = Shop::findById($id);
+        if (!$shop) {
+            View::redirect('/admin/shops');
+            return '';
+        }
+
+        return View::render('admin/delete-shop', [
+            'shop' => $shop,
+        ], true, 'admin');
+    }
+
+    public function deleteShop(string $id): string
+    {
+        if (!$this->request->hasSession('admin_id')) {
+            View::redirect('/admin/login');
+            return '';
+        }
+
+        $shop = Shop::findById($id);
+        if (!$shop) {
+            View::redirect('/admin/shops');
+            return '';
+        }
+
+        Shop::delete($id);
+        View::redirect('/admin/shops');
+        return '';
+    }
 }

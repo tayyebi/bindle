@@ -141,10 +141,12 @@ class ShopDashboardController
         $shop = $this->requireAuth();
         if (!$shop) return '';
 
+        $checkoutFields = $this->request->input('checkout_fields', []);
         Shop::update($shop['id'], [
             'name' => $this->request->input('name', $shop['name']),
             'payment_instructions' => $this->request->input('payment_instructions', ''),
             'webhook_url' => $this->request->input('webhook_url', ''),
+            'checkout_fields' => is_array($checkoutFields) ? implode(',', $checkoutFields) : 'email,phone',
         ]);
 
         View::redirect('/dashboard/settings');

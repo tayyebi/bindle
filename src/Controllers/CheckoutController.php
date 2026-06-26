@@ -53,6 +53,7 @@ class CheckoutController
 
         $customerName = trim($this->request->input('customer_name', ''));
         $customerEmail = trim($this->request->input('customer_email', ''));
+        $customerPhone = trim($this->request->input('customer_phone', ''));
         $shippingAddress = trim($this->request->input('shipping_address', ''));
         $notes = trim($this->request->input('notes', ''));
 
@@ -94,6 +95,7 @@ class CheckoutController
             'currency' => $items[0]['currency'] ?? 'USD',
             'customer_name' => $customerName,
             'customer_email' => $customerEmail,
+            'customer_phone' => $customerPhone,
             'shipping_address' => $shippingAddress,
             'notes' => $notes,
         ]);

@@ -31,6 +31,19 @@
             <small class="text-gray">رویدادهای سفارش به این آدرس ارسال می‌شوند (اختیاری)</small>
         </div>
 
+        <fieldset class="form-group">
+            <legend style="font-weight:600;font-size:0.9rem;margin-bottom:0.35rem">فیلدهای اختیاری در فرم سفارش</legend>
+            <?php $enabled = explode(',', $shop['checkout_fields'] ?? 'email,phone'); ?>
+            <label class="checkbox-label">
+                <input type="checkbox" name="checkout_fields[]" value="email" <?= in_array('email', $enabled) ? 'checked' : '' ?>>
+                ایمیل
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" name="checkout_fields[]" value="phone" <?= in_array('phone', $enabled) ? 'checked' : '' ?>>
+                تلفن
+            </label>
+        </fieldset>
+
         <button type="submit" class="btn btn-primary"><?= trans('save') ?></button>
     </form>
 </div>

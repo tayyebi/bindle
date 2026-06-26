@@ -32,6 +32,9 @@
                                 </button>
                             </form>
                             <a href="/admin/shops/<?= e($s['id']) ?>/impersonate" class="btn btn-sm btn-primary">ورود</a>
+                            <?php if (!$s['is_active']): ?>
+                                <a href="/admin/shops/<?= e($s['id']) ?>/delete" class="btn btn-sm btn-danger">حذف</a>
+                            <?php endif; ?>
                         </td>
                     </tr>
                 <?php endforeach; ?>

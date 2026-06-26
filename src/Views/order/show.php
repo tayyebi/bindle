@@ -18,6 +18,12 @@
                 <span><?= trans('email') ?>:</span>
                 <span><?= e($order['customer_email']) ?></span>
             </div>
+            <?php if (!empty($order['customer_phone'])): ?>
+                <div class="detail-row">
+                    <span>تلفن:</span>
+                    <span dir="ltr"><?= e($order['customer_phone']) ?></span>
+                </div>
+            <?php endif; ?>
             <?php if ($order['shipping_address']): ?>
                 <div class="detail-row">
                     <span><?= trans('shipping_address') ?>:</span>

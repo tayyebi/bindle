@@ -50,7 +50,7 @@ class Shop
 
     public static function update(string $id, array $data): void
     {
-        $allowed = ['name', 'email', 'payment_instructions', 'webhook_url', 'is_active'];
+        $allowed = ['name', 'email', 'payment_instructions', 'webhook_url', 'is_active', 'checkout_fields'];
         $updateData = [];
         foreach ($allowed as $key) {
             if (isset($data[$key])) {
@@ -101,5 +101,10 @@ class Shop
             'UPDATE shops SET totp_secret = \'\', totp_enabled = false, updated_at = NOW() WHERE id = ?',
             [$id]
         );
+    }
+
+    public static function delete(string $id): void
+    {
+        App::db()->query('DELETE FROM shops WHERE id = ?', [$id]);
     }
 }

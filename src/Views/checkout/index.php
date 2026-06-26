@@ -21,12 +21,24 @@
                            required class="form-control">
                 </div>
 
+                <?php $checkoutFields = explode(',', $shop['checkout_fields'] ?? 'email,phone'); ?>
+                <?php if (in_array('email', $checkoutFields)): ?>
                 <div class="form-group">
                     <label for="customer_email"><?= trans('email') ?> <small class="text-gray">(اختیاری)</small></label>
                     <input type="email" id="customer_email" name="customer_email"
                            value="<?= e($old['customer_email'] ?? '') ?>"
                            class="form-control" placeholder="example@email.com">
                 </div>
+                <?php endif; ?>
+
+                <?php if (in_array('phone', $checkoutFields)): ?>
+                <div class="form-group">
+                    <label for="customer_phone">تلفن <small class="text-gray">(اختیاری)</small></label>
+                    <input type="tel" id="customer_phone" name="customer_phone"
+                           value="<?= e($old['customer_phone'] ?? '') ?>"
+                           class="form-control" placeholder="0912xxxxxxx">
+                </div>
+                <?php endif; ?>
 
                 <div class="form-group">
                     <label for="shipping_address"><?= trans('shipping_address') ?></label>

@@ -13,6 +13,9 @@
             <h3><?= trans('customer_info') ?></h3>
             <div class="detail-row"><span><?= trans('full_name') ?>:</span><span><?= e($order['customer_name']) ?></span></div>
             <div class="detail-row"><span><?= trans('email') ?>:</span><span><?= e($order['customer_email']) ?></span></div>
+            <?php if (!empty($order['customer_phone'])): ?>
+                <div class="detail-row"><span>تلفن:</span><span dir="ltr"><?= e($order['customer_phone']) ?></span></div>
+            <?php endif; ?>
             <?php if ($order['shipping_address']): ?>
                 <div class="detail-row"><span><?= trans('shipping_address') ?>:</span><span><?= nl2br(e($order['shipping_address'])) ?></span></div>
             <?php endif; ?>
