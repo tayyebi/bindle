@@ -6,7 +6,7 @@
             <div class="order-status status-<?= e($order['status']) ?>">
                 <?= trans($order['status']) ?>
             </div>
-            <span class="text-gray"><?= trans('order_number') ?>: <?= e(substr($order['token'], 0, 8)) ?>...</span>
+            <span class="text-gray"><?= trans('order_number') ?>: <?= e($order['token']) ?></span>
         </div>
 
         <div class="order-details">

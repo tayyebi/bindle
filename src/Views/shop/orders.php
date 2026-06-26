@@ -29,7 +29,7 @@
                 <tbody>
                     <?php foreach ($orders as $order): ?>
                         <tr>
-                            <td class="dir-ltr"><?= e(substr($order['token'], 0, 8)) ?>...</td>
+                            <td class="dir-ltr"><?= e($order['token']) ?></td>
                             <td><?= e($order['customer_name']) ?></td>
                             <td><?= pnum(number_format((float) $order['total'], 0)) ?> <?= e($order['currency']) ?></td>
                             <td><span class="badge badge-<?= e($order['status']) ?>"><?= trans($order['status']) ?></span></td>

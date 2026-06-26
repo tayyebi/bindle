@@ -1,7 +1,7 @@
 <?php $title = trans('orders'); ?>
 <div class="order-detail-page">
     <a href="/dashboard/orders" class="btn btn-sm btn-outline"><?= trans('back') ?></a>
-    <h1><?= trans('order_number') ?>: <?= e(substr($order['token'], 0, 12)) ?>...</h1>
+    <h1><?= trans('order_number') ?>: <?= e($order['token']) ?></h1>
 
     <div class="order-card">
         <div class="order-header">

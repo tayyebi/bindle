@@ -42,10 +42,18 @@ class Order
 
     public static function create(array $data): string
     {
+        $chars = 'abcdefghijklmnopqrstuvwxyz0123456789';
+        do {
+            $token = '';
+            for ($i = 0; $i < 5; $i++) {
+                $token .= $chars[random_int(0, 35)];
+            }
+        } while (self::findByToken($token));
+
         return App::db()->insert('orders', [
             'shop_id' => $data['shop_id'],
             'cart_id' => $data['cart_id'] ?? null,
-            'token' => bin2hex(random_bytes(32)),
+            'token' => $token,
             'status' => 'pending',
             'total' => $data['total'],
             'currency' => $data['currency'],

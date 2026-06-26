@@ -1,7 +1,7 @@
 <div class="order-success">
     <div class="success-icon">&#10003;</div>
     <h1><?= trans('order_placed') ?></h1>
-    <p class="text-gray"><?= trans('order_number') ?>: <?= e(substr($order['token'], 0, 12)) ?>...</p>
+    <p class="text-gray"><?= trans('order_number') ?>: <?= e($order['token']) ?></p>
 
     <div class="order-card">
         <div class="order-details">
