@@ -17,27 +17,33 @@
                 <span><?= trans('app.name') ?></span>
             </a>
             <nav class="nav">
-                <?php if (isset($shop) && $shop): ?>
-                    <a href="/dashboard" class="btn btn-sm btn-outline"><?= trans('dashboard') ?></a>
-                    <a href="/dashboard/orders" class="btn btn-sm btn-outline"><?= trans('orders') ?></a>
-                    <a href="/dashboard/settings" class="btn btn-sm btn-outline"><?= trans('settings') ?></a>
-                    <a href="<?= 'https://' . e($shop['domain']) ?>" class="btn btn-sm btn-outline" target="_blank" rel="noopener">مشاهده فروشگاه</a>
-                    <a href="/profile" class="btn btn-sm btn-outline">پروفایل</a>
-                    <a href="/logout" class="btn btn-sm btn-outline"><?= trans('logout') ?></a>
-                <?php elseif (isset($_SESSION['admin_id'])): ?>
-                    <?php if (!empty($_SESSION['impersonated_by_admin'])): ?>
-                        <a href="/admin/unimpersonate" class="btn btn-sm btn-danger">بازگشت به مدیریت</a>
-                    <?php endif; ?>
-                    <a href="/admin" class="btn btn-sm btn-outline"><?= trans('dashboard') ?></a>
-                    <a href="/admin/shops" class="btn btn-sm btn-outline"><?= trans('shops') ?></a>
-                    <a href="/system/logs" class="btn btn-sm btn-outline">لاگ‌ها</a>
-                    <a href="/system/webhooks" class="btn btn-sm btn-outline">وب‌هوک</a>
-                    <a href="/system/database" class="btn btn-sm btn-outline">دیتابیس</a>
-                    <a href="/profile" class="btn btn-sm btn-outline">پروفایل</a>
-                    <a href="/logout" class="btn btn-sm btn-outline"><?= trans('logout') ?></a>
-                <?php else: ?>
-                    <a href="/login" class="btn btn-sm btn-outline"><?= trans('login') ?></a>
+<?php
+$items = [];
+if (isset($shop) && $shop) {
+    $items[] = ['/dashboard', trans('dashboard')];
+    $items[] = ['/dashboard/orders', trans('orders')];
+    $items[] = ['/dashboard/settings', trans('settings')];
+    $items[] = ['https://' . e($shop['domain']), 'مشاهده فروشگاه', true];
+    $items[] = ['/profile', 'پروفایل'];
+    $items[] = ['/logout', trans('logout')];
+} elseif (isset($_SESSION['admin_id'])) {
+    $items[] = ['/admin', trans('dashboard')];
+    $items[] = ['/admin/shops', trans('shops')];
+    $items[] = ['/system/logs', 'لاگ‌ها'];
+    $items[] = ['/system/webhooks', 'وب‌هوک'];
+    $items[] = ['/system/database', 'دیتابیس'];
+    $items[] = ['/profile', 'پروفایل'];
+    $items[] = ['/logout', trans('logout')];
+} else {
+    $items[] = ['/login', trans('login')];
+}
+?>
+                <?php if (!empty($_SESSION['impersonated_by_admin'])): ?>
+                    <a href="/admin/unimpersonate" class="btn btn-sm btn-danger">بازگشت به مدیریت</a>
                 <?php endif; ?>
+                <?php foreach ($items as $it): ?>
+                    <a href="<?= $it[0] ?>" class="btn btn-sm btn-outline"<?= !empty($it[2]) ? ' target="_blank" rel="noopener"' : '' ?>><?= $it[1] ?></a>
+                <?php endforeach; ?>
             </nav>
         </div>
     </header>
