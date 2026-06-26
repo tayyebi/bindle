@@ -26,12 +26,12 @@
                         <td><?= $s['is_active'] ? trans('yes') : trans('no') ?></td>
                         <td><?= e(date('Y-m-d', strtotime($s['created_at']))) ?></td>
                         <td>
+                            <a href="/admin/shops/<?= e($s['id']) ?>/impersonate" class="btn btn-sm btn-primary">ورود</a>
                             <form method="POST" action="/admin/shops/<?= e($s['id']) ?>/toggle" style="display:inline">
                                 <button type="submit" class="btn btn-sm btn-outline">
                                     <?= $s['is_active'] ? 'غیرفعال' : 'فعال' ?>
                                 </button>
                             </form>
-                            <a href="/admin/shops/<?= e($s['id']) ?>/impersonate" class="btn btn-sm btn-primary">ورود</a>
                             <?php if (!$s['is_active']): ?>
                                 <a href="/admin/shops/<?= e($s['id']) ?>/delete" class="btn btn-sm btn-danger">حذف</a>
                             <?php endif; ?>
