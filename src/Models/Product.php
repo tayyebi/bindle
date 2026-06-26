@@ -38,6 +38,7 @@ class Product
                 'type' => $data['type'] ?? 'physical',
                 'description' => $data['description'] ?? '',
                 'image_url' => $data['image_url'] ?? '',
+                'stock' => $data['stock'] ?? null,
             ], 'id = :id', ['id' => $existing['id']]);
             return $existing['id'];
         }
@@ -51,6 +52,7 @@ class Product
             'type' => $data['type'] ?? 'physical',
             'description' => $data['description'] ?? '',
             'image_url' => $data['image_url'] ?? '',
+            'stock' => $data['stock'] ?? null,
         ]);
     }
 }

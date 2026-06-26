@@ -77,8 +77,40 @@ class AdminController
     {
         $this->request->removeSession('shop_id');
         $this->request->removeSession('admin_id');
+        $this->request->removeSession('impersonated_by_admin');
         session_destroy();
         View::redirect('/login');
+        return '';
+    }
+
+    public function impersonate(string $id): string
+    {
+        if (!$this->request->hasSession('admin_id')) {
+            View::redirect('/admin/login');
+            return '';
+        }
+
+        $shop = Shop::findById($id);
+        if (!$shop) {
+            View::redirect('/admin/shops');
+            return '';
+        }
+
+        $_SESSION['shop_id'] = $shop['id'];
+        $_SESSION['impersonated_by_admin'] = $this->request->session('admin_id');
+        View::redirect('/dashboard');
+        return '';
+    }
+
+    public function unimpersonate(): string
+    {
+        $adminId = $this->request->session('impersonated_by_admin');
+        $this->request->removeSession('shop_id');
+        $this->request->removeSession('impersonated_by_admin');
+        if ($adminId) {
+            $this->request->setSession('admin_id', $adminId);
+        }
+        View::redirect('/admin/shops');
         return '';
     }
 

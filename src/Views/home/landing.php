@@ -24,7 +24,7 @@
     </div>
 
     <div class="landing-section">
-        <h2>راهنمای اتصال فروشگاه</h2>
+        <h2>راهنمای اتصال فروشگاه (On-Boarding)</h2>
         <p class="text-gray">برای افزودن سبد خرید و پرداخت به فروشگاه خود، مراحل زیر را انجام دهید:</p>
         <div class="landing-steps">
             <div class="step-card">
@@ -39,6 +39,17 @@
             </div>
             <div class="step-card">
                 <div class="step-number">۳</div>
+                <h3>تنظیم هدرها (Headers)</h3>
+                <p class="text-gray">برای تشخیص خودکار محصول، هدرهای زیر را در سرور خود تنظیم کنید:</p>
+                <pre class="code-sample dir-ltr">Content-Type: text/html; charset=utf-8
+X-Robots-Tag: all
+Access-Control-Allow-Origin: *</pre>
+                <p class="text-gray" style="margin-top:0.5rem;font-size:0.85rem;">
+                    هدر <code>Content-Type</code> با charset=utf-8 برای خواندن صحیح کاراکترهای فارسی ضروری است.
+                </p>
+            </div>
+            <div class="step-card">
+                <div class="step-number">۴</div>
                 <h3>افزودن لینک</h3>
                 <p class="text-gray">لینک زیر را در صفحه محصول خود قرار دهید:</p>
                 <pre class="code-sample">&lt;a href="https://SUBDOMAIN/add?url=PRODUCT_URL"&gt;
@@ -50,7 +61,45 @@
 &lt;/a&gt;</pre>
             </div>
             <div class="step-card">
-                <div class="step-number">۴</div>
+                <div class="step-number">۵</div>
+                <h3>بررسی ساختار داده (Schema.org)</h3>
+                <p class="text-gray">بقچه از ساختارهای استاندارد schema.org پشتیبانی می‌کند. صفحه محصول شما باید شامل JSON-LD یا Microdata باشد:</p>
+                <div style="text-align:right;font-size:0.85rem;line-height:1.8;">
+                    <strong>انواع پشتیبانی شده:</strong>
+                    <ul style="margin:0.5rem 0;padding-right:1.5rem;">
+                        <li><code>schema.org/Product</code></li>
+                        <li><code>schema.org/Offer</code> (price, priceCurrency, inventoryLevel)</li>
+                        <li><code>schema.org/AggregateOffer</code> (highPrice, lowPrice, priceCurrency)</li>
+                    </ul>
+                    <strong>پراپرتی‌های ضروری:</strong>
+                    <ul style="margin:0.5rem 0;padding-right:1.5rem;">
+                        <li><code>name</code> — نام محصول</li>
+                        <li><code>offers.price</code> — قیمت (عددی مثبت)</li>
+                    </ul>
+                    <strong>پراپرتی‌های اختیاری:</strong>
+                    <ul style="margin:0.5rem 0;padding-right:1.5rem;">
+                        <li><code>description</code> — توضیحات</li>
+                        <li><code>image</code> — URL تصویر</li>
+                        <li><code>offers.priceCurrency</code> — واحد پول (پیش‌فرض: USD)</li>
+                        <li><code>offers.inventoryLevel.value</code> — موجودی انبار (عدد صحیح)</li>
+                        <li><code>productType</code> — نوع محصول (physical/digital)</li>
+                    </ul>
+                </div>
+                <p class="text-gray" style="margin-top:0.5rem;font-size:0.85rem;">
+                    <strong>مثال inventoryLevel:</strong> اگر موجودی انبار را تعریف کنید، بقچه آن را ذخیره می‌کند.
+                </p>
+                <pre class="code-sample dir-ltr">{
+  "@type": "Offer",
+  "price": 250000,
+  "priceCurrency": "IRR",
+  "inventoryLevel": {
+    "@type": "QuantitativeValue",
+    "value": 42
+  }
+}</pre>
+            </div>
+            <div class="step-card">
+                <div class="step-number">۶</div>
                 <h3>انجام شد</h3>
                 <p class="text-gray">بقچه به صورت خودکار اطلاعات محصول را از schema.org استخراج می‌کند</p>
             </div>
@@ -86,11 +135,22 @@ For complex URLs use base64 instead:
 
 - BASE64_URL: standard base64 of the full product URL
 
+Header requirements:
+- Set Content-Type: text/html; charset=utf-8
+- Set X-Robots-Tag: all
+- Set Access-Control-Allow-Origin: *
+
+Supported schema.org markup (JSON-LD or Microdata):
+- Product (name, description, image)
+- Offer (price, priceCurrency, inventoryLevel.value)
+- AggregateOffer (highPrice, lowPrice)
+
 Steps:
 1. Find the product page template
 2. Add the link with the correct SUBDOMAIN
-3. Make sure the page has schema.org/Product markup
-4. Style the link as a button matching the site design
-5. Whitelist BindleBot/1.0 in CDN/firewall so Bindle can fetch product data</pre>
+3. Add schema.org/Product JSON-LD to the page head (if missing)
+4. Include offers.inventoryLevel.value for stock tracking (optional)
+5. Style the link as a button matching the site design
+6. Whitelist BindleBot/1.0 in CDN/firewall so Bindle can fetch product data</pre>
     </div>
 </div>

@@ -178,7 +178,7 @@ class Logger
         if (!in_array($level, ['error', 'critical'])) return;
 
         try {
-            SystemWebhookService::dispatch('error.' . $level, [
+            EventService::dispatch('error.' . $level, [
                 'level' => $level,
                 'message' => $message,
                 'file' => $file,

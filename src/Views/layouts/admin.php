@@ -21,9 +21,13 @@
                     <a href="/dashboard" class="btn btn-sm btn-outline"><?= trans('dashboard') ?></a>
                     <a href="/dashboard/orders" class="btn btn-sm btn-outline"><?= trans('orders') ?></a>
                     <a href="/dashboard/settings" class="btn btn-sm btn-outline"><?= trans('settings') ?></a>
+                    <a href="<?= 'https://' . e($shop['domain']) ?>" class="btn btn-sm btn-outline" target="_blank" rel="noopener">مشاهده فروشگاه</a>
                     <a href="/profile" class="btn btn-sm btn-outline">پروفایل</a>
                     <a href="/logout" class="btn btn-sm btn-outline"><?= trans('logout') ?></a>
                 <?php elseif (isset($_SESSION['admin_id'])): ?>
+                    <?php if (!empty($_SESSION['impersonated_by_admin'])): ?>
+                        <a href="/admin/unimpersonate" class="btn btn-sm btn-danger">بازگشت به مدیریت</a>
+                    <?php endif; ?>
                     <a href="/admin" class="btn btn-sm btn-outline"><?= trans('dashboard') ?></a>
                     <a href="/admin/shops" class="btn btn-sm btn-outline"><?= trans('shops') ?></a>
                     <a href="/system/logs" class="btn btn-sm btn-outline">لاگ‌ها</a>

@@ -21,7 +21,7 @@
                 <?php foreach ($shops as $s): ?>
                     <tr>
                         <td><?= e($s['name']) ?></td>
-                        <td class="dir-ltr"><?= e($s['domain']) ?></td>
+                        <td class="dir-ltr"><a href="https://<?= e($s['domain']) ?>" target="_blank" rel="noopener"><?= e($s['domain']) ?></a></td>
                         <td><?= e($s['email']) ?></td>
                         <td><?= $s['is_active'] ? trans('yes') : trans('no') ?></td>
                         <td><?= e(date('Y-m-d', strtotime($s['created_at']))) ?></td>
@@ -31,6 +31,7 @@
                                     <?= $s['is_active'] ? 'غیرفعال' : 'فعال' ?>
                                 </button>
                             </form>
+                            <a href="/admin/shops/<?= e($s['id']) ?>/impersonate" class="btn btn-sm btn-primary">ورود</a>
                         </td>
                     </tr>
                 <?php endforeach; ?>

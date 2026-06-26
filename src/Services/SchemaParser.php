@@ -124,6 +124,7 @@ class SchemaParser
                 'description' => $data['description'] ?? '',
                 'image_url' => $this->extractImage($data),
                 'type' => $this->detectProductType($data),
+                'stock' => $this->extractInventoryLevel($data),
             ];
         }
 
@@ -168,6 +169,7 @@ class SchemaParser
             'description' => $this->getMicrodataValue($xpath, $node, 'description'),
             'image_url' => $this->getMicrodataAttribute($xpath, $node, 'image', 'src'),
             'type' => 'physical',
+            'stock' => $this->extractMicrodataInventoryLevel($xpath, $node),
         ];
     }
 
@@ -251,6 +253,30 @@ class SchemaParser
             }
         }
         return '';
+    }
+
+    private function extractInventoryLevel(array $data): ?int
+    {
+        if (isset($data['offers'])) {
+            $offers = $data['offers'];
+            if (isset($offers['inventoryLevel']['value'])) {
+                return (int) $offers['inventoryLevel']['value'];
+            }
+            if (isset($offers[0]['inventoryLevel']['value'])) {
+                return (int) $offers[0]['inventoryLevel']['value'];
+            }
+        }
+        return null;
+    }
+
+    private function extractMicrodataInventoryLevel(\DOMXPath $xpath, \DOMElement $context): ?int
+    {
+        $nodes = $xpath->query('.//*[@itemprop="inventoryLevel"]//*[@itemprop="value"]', $context);
+        if ($nodes->length > 0) {
+            $val = (int) trim($nodes->item(0)->textContent);
+            return $val > 0 ? $val : null;
+        }
+        return null;
     }
 
     private function detectProductType(array $data): string

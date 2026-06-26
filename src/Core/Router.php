@@ -68,6 +68,8 @@ class Router
                 '/admin/login' => [AdminController::class, 'loginForm'],
                 '/admin/shops' => [AdminController::class, 'shops'],
                 '/admin/shops/create' => [AdminController::class, 'createShopForm'],
+                '/admin/shops/{id}/impersonate' => [AdminController::class, 'impersonate'],
+                '/admin/unimpersonate' => [AdminController::class, 'unimpersonate'],
                 '/profile' => [ProfileController::class, 'index'],
                 '/profile/totp' => [ProfileController::class, 'totpSetup'],
                 '/totp/verify' => [ProfileController::class, 'totpVerifyForm'],
