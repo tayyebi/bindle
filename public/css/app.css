@@ -147,11 +147,21 @@ small {
 
 .btn-outline {
     background: transparent;
-    border: 2px solid #fff;
-    color: #fff;
+    border: 2px solid #111;
+    color: #111;
 }
 
 .btn-outline:hover {
+    background: #111;
+    color: #fff;
+}
+
+.header .btn-outline {
+    border-color: #fff;
+    color: #fff;
+}
+
+.header .btn-outline:hover {
     background: #fff;
     color: #111;
 }
@@ -172,13 +182,13 @@ small {
 }
 
 .btn-danger {
-    border-color: #999;
-    color: #666;
+    border-color: #c62828;
+    color: #c62828;
 }
 
 .btn-danger:hover {
-    background: #111;
-    border-color: #111;
+    background: #c62828;
+    border-color: #c62828;
     color: #fff;
 }
 
