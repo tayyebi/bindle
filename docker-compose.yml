@@ -22,7 +22,7 @@ services:
         condition: service_healthy
     networks:
       - bindle
-    restart: unless-stopped
+    restart: always
 
   web:
     image: nginx:alpine
@@ -36,6 +36,7 @@ services:
       - app
     networks:
       - bindle
+    restart: always
 
   db:
     image: postgres:16-alpine

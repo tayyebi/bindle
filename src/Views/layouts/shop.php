@@ -20,7 +20,6 @@
                 <a href="/cart" class="btn btn-sm btn-outline">
                     <?= trans('cart') ?>
                 </a>
-                <a href="/login" class="btn btn-sm btn-outline"><?= trans('login') ?></a>
             </nav>
         </div>
     </header>
